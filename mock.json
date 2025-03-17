@@ -1,0 +1,15 @@
+[
+    {
+        "id": "1",
+        "router": "Appium",
+        "image": "/next.svg",
+        "title": "Appium + Java 实现的小程序自动化测试框架搭建",
+        "desc": "实战记录Appium+JAVA开发的自动化测试框架，是入职以来独立选型独立搭建从0到1开发的自动化项目。",
+        "time": "2020-04-29T18:06:04.000Z",
+        "tags": [
+            "Appium",
+            "Java",
+            "自动化测试"
+        ]
+    }
+]
