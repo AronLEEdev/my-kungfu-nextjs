@@ -1,0 +1,199 @@
+## Appium + Java 实现的小程序自动化测试框架搭建
+
+### 这项目是我入公司以来第一个自己挑框架自己设计独立搭建起来的项目，本篇类似实战记录，记录踩过的坑。
+
+> 背景是为了能够自动化测试一个特定小程序的基本功能，云测试平台有类似的功能测试，看官方给出的样例工程，实际上也是搭建一个基于 appium 的工程。我想着既然如此就干脆自己搭一个了，还能定制些自己喜欢的功能。
+> 以前做过 JAVA web 应用的自动化测试，使用的是 selenium，而 Appium 实际上我个人理解就是个手机端应用使用的 selenium 框架，底层实现，代码使用上，都跟 selenium 差不多。
+
+#### 这是一篇基于 appium 和 java 搭建的文章  [https://www.swtestacademy.com/appium-tutorial/](https://www.swtestacademy.com/appium-tutorial/)，我整个项目的搭建也是受这篇文章的启发，写的还是很详细的。里面甚至还有安卓环境的搭建，JAVA 环境的搭建。
+
+下面以我的小程序自动化测试为例，运行在真机的 apk 上说明怎么搭建：
+
+先说一下 Appium 的使用 ：
+
+想体验 appium 的能力，最直观的就是使用一个他的可视化工具：appium desktop => [https://www.electronjs.org/apps/appium](https://www.electronjs.org/apps/appium)
+
+![](/images/appium/appium-desktop.png)
+
+下载完成启动之后的页面如上图，点击 start server 就能在本地起他的 appium 服务，起来之后会进入一个类 DOS 的页面，这个里面会打印 appium 后台执行过程中的所有信息，报错日志什么的也在这里查看。
+
+![](/images/appium/appium-server.png)
+
+点击 start inspector session，就能进入一个更详细的配置页面，这个页面配置的就是希望拉起的 app 信息了。记得点击上面导航栏的 server，选择服务器。我个人都是在本地启动，所以选的都是 automatic server，默认就是在前面配置的 4723 端口上的服务。
+
+![](/images/appium/appium-session.png)
+
+而下面的 Capabilities 页面，就是待启动的 APP 信息配置页了，一般来说会有这些参数需要配置：以下信息我都是以真机为例，但安卓模拟器也是同理。
+
+platformName => 平台名称，例如我这里的真机环境是安卓
+
+platformVersion => 平台版本，例如这个真机的版本是 android 9 ，就直接填 9
+
+deviceName => 真机的设备名称，一般在自己手机设置页看就能看到了
+
+appActivity 和 appPackage 是要重点说的：
+
+这两个参数的意义是你待拉起的 APP 的“包名”和“第一个访问的活动类”。例如我这里的测试 APK，是 Welink-UAT 这个 apk。
+
+在真机上先运行 welink-uat，用 adb 这个命令：
+
+```
+adb shell "dumpsys window w|grep \\/|grep name=|sed 's/mSurface=Surface(name=//g'|sed 's/)//g'|sed 's/ //g'"
+```
+
+可以查看到如下信息 ：
+
+![](/images/appium/exp1.png)
+
+红框内 com.huawei.works.uat/huawei.w3.MainActivity 就分别是我的包的 appPackage 和 appActivity；
+
+但是。如果你按照这个配置，启动 appium 时，会报 Permission denial \*\*\*\*的错误。这是因为 appActivity 指定的 MainActivity，并不是打开 Welink-UAT 时的第一个活动类。
+
+原因简单来说，MainActivity 可能是他的主类，在前面，你还需要登录（LoginActivity），但是你却没有登录就想直接访问 Main 了，肯定是不被允许的。
+
+并且，值得注意的是，appium 每次拉起一个 App，都会将原数据全部清空，重新拉起。
+
+所以在找正确的 appActivity 时，自己要手动清除数据，从零拉起这个 APP 来找第一个正确的类，例如 Welink-UAT 的第一个类就是一个广告页的类：huawei.w3.ui.welcome.W3SplashScreenActivity。
+
+配置好之后点击 Start session，一切正常的话，就会看到在真机上，welink-uat 被自动打开了，并且停在第一个广告页面。同时 appium 也弹出了一个新窗口：
+
+![](/images/appium/exp2.png)
+
+这个页面就是后面开发过程中会经常用到的页面了。左边是真机的当前页面，中间是个 DOM 页面，右边则是当前元素的一些信息。最上边的各类按钮使用起来也很方便，有选择元素，根据坐标点击，滑动等等的操作。最常用到的应该就是选择元素了，例如这个页面里，我选择了右下角弹出的这个权限窗口的确认按钮。
+
+很明显这里在代码中，我需要写一段代码，找到这个确认按钮的元素，点击赋权。右边的这个窗口就很方便的提供了他的定位信息。
+
+这个信息里是 id,xpath 还是 name 等等，完全取决于你的小程序或者 APK 的代码了。
+
+这里有个原则，**在定位元素时，能使用 id/name 就不要用 xpath**。xpath 确实会引入很多问题，并且当你的窗口结构变化时，xpath 也会随之变化。
+
+### JAVA 后台框架：
+
+用 appium 来搭建自动化，后台框架的选择其实是很多样的，我就认识另外一个测试同事使用的是 python + appium。而因为我有 JAVA 背景，就选择了 java spring boot 来搭建。一开始实际上就是一个 spring boot application，后面出于兴趣，又改造成了 javafx 做了个可视化页面。
+
+下面介绍一些基础的配置，不涉及具体的业务测试类：
+
+1\. 创建工程：spring 官方出的 spring initializr ([https://start.spring.io/](https://start.spring.io/))，简单的填些配置就能自动生成一个 spring 工程，用起来很方便
+
+2\. appium 相关的开源包：
+
+```java
+<dependency>
+  <groupId>io.appium</groupId>
+  <artifactId>java-client</artifactId>
+  <version>7.0.0</version>
+</dependency>
+
+<!-- https://mvnrepository.com/artifact/org.seleniumhq.selenium/selenium-java -->
+
+<dependency>
+  <groupId>org.seleniumhq.selenium</groupId>
+  <artifactId>selenium-java</artifactId>
+  <version>3.141.59</version>
+</dependency>
+```
+
+3\. 基础配置类和方法：
+
+JAVA 后台的逻辑启动时，其实就跟在 appium desktop 配置那些参数，点击 start session 是一样的道理。所以需要一个 config 类存储这些参数，再写个方法拉起 session。我的选择是直接利用创建工程自带的 application.properties 来存储 ：
+
+![](/images/appium/exp3.png)
+
+然后在是拉起 session 的方法：
+
+![](/images/appium/exp4.png)
+
+将这个 void 方法，放到@SpringBootApplication 的主类去执行，就能拉起 APP 了。
+
+这里值得注意的是这个 URL，这里的地址我并没有放到 application.properties 里去管理。这个地址对应的是最开始，appium 启动服务时对应的地址。我在本地的 4723 端口启动了 appium 服务。所以即使 pom 里使用了 appium 的开源库，有一个服务端起着 appium 服务还是必须的。没有条件在远端库启动服务的话，就像这样配置本地服务就可以了。
+
+最后一行的 driver，如果以前接触过 selenium 的话应该是熟悉的，在 web 应用，selenium 用的可能是 ChromeDriver 之类的，在安卓就用 AndroidDriver。不熟悉 driver 的，就简单理解他是一个代替你手动点的人，提供一系列定位元素的方法。
+
+另外还可以初始化一个 wait = new WebDriverWait(driver, timeOutInSeconds) ，wait 对象可以用在页面加载，跳转之类的场景。当你在等待某个元素加载出来再执行某个方法时，用 wait.until 来保证你的代码执行不会快于你的页面元素加载。driver 和 wait 两个对象，就够后面测试类使用了。
+
+到这里就是基础的配置代码了，后面就是涉及到业务的测试类了：
+
+这里举个例子，例如我下面这段代码，是拉起 welink-uat 之后，从点击广告页，到登录，最后到主页面的执行方法：
+
+```java
+private void initWelinkService()
+
+{
+
+//Welink UAT首页广告
+
+wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("com.huawei.works.uat:id/iv\_page\_img")));
+
+pauseForLoading(2000);
+
+mobileActions.tapByCoordinates(379, 1263);
+
+//进入登录页
+
+wait.until(ExpectedConditions.visibilityOfElementLocated(By.id(
+
+"com.huawei.works.uat:id/et\_guide\_login\_user\_name"))).sendKeys(demoConfig.getAccount());
+
+wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("com.huawei.works.uat:id/et\_guide\_login\_password")))
+
+.sendKeys(demoConfig.getPassword());
+
+//登录
+
+wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("com.huawei.works.uat:id/btn\_login"))).click();
+
+//隐私声明页
+
+wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("com.huawei.works.uat:id/agree"))).click();
+
+//允许读写日历中的日程信息
+
+processPermissions(driver, "android:id/button1", 4000);
+
+}
+```
+
+这里面有几个是我自己包装的工具方法，例如 pauseForLoading，实际上是 Thread.sleep()。还有 processPermissions，APK 底座会弹出请求某个权限的弹框，有时候不止一个，因此我包装了一下，循环点击这些按钮，全部赋权，每个循环停顿一下：
+
+```java
+public static void processPermissions(AndroidDriver<MobileElement> driver, String buttonKey, long pauseMillis)
+{
+    while (driver.findElements(By.id(buttonKey)).size() > 0)
+    {
+        driver.findElements(By.id(buttonKey)).get(0).click();
+        pauseForLoading(pauseMillis);
+    }
+}
+```
+
+然后是 mobileAction.tapByCoordinates，mobileAction 是一系列手机端操作的工具方法。例如我这里使用到的根据坐标点击，这里是因为我定位不到那个广告首页的确认按钮（有个水印浮在上面），只能根据坐标来点击，这种问题，如果你是相关开发，我建议是有条件就改一下，毕竟用坐标还是没有用 id 之类的好，不同手机不同屏幕大小，坐标难免偏移。但由于这块页面是底座 welink-uat 的实现，只能用坐标了。
+
+至于坐标值怎么看，appium 的窗口也是能看到的，上边工具栏也有 tap by coordinates 的按钮，点击之后在左侧就能显示出坐标了 ：
+
+![](/images/appium/appium-coordinates.png)
+
+类似这样，只要声明一系列的 service 类来执行每一个功能，最后统一注入到 main 方法中执行就行了。
+
+最后，说一下为什么我没有像原文一样选择 TestNG，而是选择 spring 来执行。实际上 TestNG 确实看起来能符合要求，也是我一开始的方向。将 startupappium 方法放到一个主测试类的@BeforeClass，初始化 driver,wait 对象，后面所有的单元测试类继承这个主测试类，直接就能访问到 driver 和 Wait 去使用。把一系列的测试类用 testSuite 包装，顺序执行，最后还能使用 testNG 自带的测试报告输出。
+
+例如，这是我原本的 testng.xml ：
+
+![](/images/appium/testng.png)
+
+但是！我发现 appium 按照这个顺序执行时，mainTest 执行完，要跳到下一个 test 时，app 会直接闪退。后来也没定位出原因，就换思路使用 spring 了，功能反正也更强大一点。
+
+1\. Extent Reports : 一个开源的测试报告工具类，选他的原因单纯就是因为好看，后来发现使用上也挺方便的。这是最终输出的 html 效果图：
+
+![](/images/appium/extendReports.png)
+
+2\. 基于 javafx，写个简单的可视化页面 ：
+
+配置页面：
+
+![](/images/appium/javafx1.png)
+
+执行的进度：
+
+![](/images/appium/javafx2.png)
+
+![](/images/appium/javafx3.png)
