@@ -5,6 +5,7 @@
 
 @plugin "tailwindcss-animate";
 @plugin "@tailwindcss/typography";
+@plugin "daisyui";
 
 @custom-variant dark (&:is(.dark *));
 
