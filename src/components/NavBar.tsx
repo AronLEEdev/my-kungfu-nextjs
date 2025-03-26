@@ -15,7 +15,7 @@ export function NavBar() {
     }
     return (
         <div className='flex justify-between items-center w-full h-full max-h-9 border border-gray-200 py-6 border-b-1 border-t-0 border-l-0 border-r-0'>
-            <div className="px-3 font-bold text-2xl">My KungFu</div>
+            <div className="px-3 font-bold text-2xl flex justify-center items-center">&#129520; My KungFu</div>
             <DropdownMenu open={isDropdownOpen} onOpenChange={setIsDropdownOpen}>
                 <DropdownMenuTrigger asChild>
                     <Button variant="ghost">

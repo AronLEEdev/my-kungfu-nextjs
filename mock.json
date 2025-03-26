@@ -1,15 +1,83 @@
 [
-    {
-        "id": "1",
-        "router": "Appium",
-        "image": "/next.svg",
-        "title": "Appium + Java 实现的小程序自动化测试框架搭建",
-        "desc": "实战记录Appium+JAVA开发的自动化测试框架，是入职以来独立选型独立搭建从0到1开发的自动化项目。",
-        "time": "2020-04-29T18:06:04.000Z",
-        "tags": [
-            "Appium",
-            "Java",
-            "自动化测试"
-        ]
-    }
+  {
+    "id": "1",
+    "router": "Appium",
+    "image": "/appium.png",
+    "title": "Appium + Java 实现的小程序自动化测试框架搭建",
+    "desc": "实战记录Appium+JAVA开发的自动化测试框架，是入职以来独立选型独立搭建从0到1开发的自动化项目。",
+    "time": "2020-04-29T18:06:04.000Z",
+    "tags": ["Appium", "Java", "自动化测试"]
+  },
+  {
+    "id": "2",
+    "router": "VRinMiniprogram",
+    "image": "/vrminiprogram.jpg",
+    "title": "小程序中的VR全景组件研讨",
+    "desc": "现在越来越多项目选择用小程序来展示VR业务，而腾讯，阿里等也陆续推出他们的VR解决方案，本篇主要记录在微信小程序 & 淘宝小程序上实现VR的几种途径。",
+    "time": "2020-12-22T15:05:04.000Z",
+    "tags": ["小程序", "VR"]
+  },
+  {
+    "id": "3",
+    "router": "Cypress",
+    "image": "/cypress.png",
+    "title": "cypress自动化测试框架使用记录",
+    "desc": "cypress是纯前端的自动化测试框架，适用于前端web页面；之前搞自动化测试主要是用java的selenium，第一次接触到纯前端的自动化框架，发现他里面的功能还是比较丰富的，语法也很简单。除了可以支持配置在流水线运行之外，他还提供自己的任务看板，录制视频等功能，体验非常好。",
+    "time": "2021-04-01T20:50:04.000Z",
+    "tags": ["cypress", "自动化测试"]
+  },
+  {
+    "id": "4",
+    "router": "GraphQL",
+    "image": "/graphql.png",
+    "title": "GraphQL 基础实践 nodejs & Java",
+    "desc": "GraphQL 是由facebook提出的，一种协助前后台之间交流的语言。比起传统的REST api，他主要解决 overfetching 和 underfetching 两种问题。",
+    "time": "2021-07-28T15:27:04.000Z",
+    "tags": ["GraphQL", "nodejs", "Java"]
+  },
+  {
+    "id": "5",
+    "router": "UniappSubpackge",
+    "image": "/uniapp.jpg",
+    "title": "uniapp 小程序包大小优化 - 主包与分包",
+    "desc": "这次项目中遇到要新引入依赖，但是发现依赖进来之后包已经大的无法发布了。因此做了一次代码包的整改清理，有一些坑是我之前没想到的，在这里记录一下。",
+    "time": "2021-09-11T15:11:00.000Z",
+    "tags": ["uniapp", "小程序"]
+  },
+  {
+    "id": "6",
+    "router": "CSSSprites",
+    "image": "/csssprites.png",
+    "title": "CSS Sprites 精灵图的概念与在小程序中应用",
+    "desc": "本次小程序项目中，主包的大小已经大到无法发布了。这时候最先想到的就是把主包里的Static目录的静态图片全部清理掉换成远程图片。但是全部替换的会导致页面加载时会并发很多请求，虽然响应都很快，但是一次请求太多图片资源也是很影响体验的，因此想到了引入精灵图的概念来进行整改。",
+    "time": "2021-09-13T17:43:04.000Z",
+    "tags": ["小程序", "CSS"]
+  },
+  {
+    "id": "7",
+    "router": "Playwright",
+    "image": "/playwright.png",
+    "title": "基于playwright的E2E自动化测试框架搭建",
+    "desc": "Playwright是2023年度github上获星数最多的自动化框架，可以完成多浏览器的自动化测试，具有录制，截屏，自动重试等功能，也有优化开发体验的vscode插件。鉴于项目上正好要使用相关能力，以下记录我在使用过程中遇到的一些问题和解决方法。",
+    "time": "2024-01-22T10:34:00.000Z",
+    "tags": ["playwright"]
+  },
+  {
+    "id": "8",
+    "router": "StudentVerify",
+    "image": "/wechat.png",
+    "title": "微信小程序 学生认证插件接入指南",
+    "desc": "因业务需求，预研了微信官方新提供的“学生身份快速验证”插件，下面说明下如何申请及实际接入插件。",
+    "time": "2024-03-08T15:13:00.000Z",
+    "tags": ["微信小程序", "学生验证"]
+  },
+  {
+    "id": "9",
+    "router": "JestSpyOn",
+    "image": "/jest.png",
+    "title": "【Jest】mock/spyOn同一个module下的调用方法不生效的问题：作用域",
+    "desc": "记一次在使用jest mock方法不起作用的问题和解决方案。",
+    "time": "2024-08-08T11:48:00.000Z",
+    "tags": ["jest", "javascript"]
+  }
 ]
