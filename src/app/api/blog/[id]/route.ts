@@ -1,10 +1,8 @@
-import type { NextApiRequest, NextApiResponse } from "next";
+import { NextResponse } from "next/server";
 import { prisma } from "../../../../../lib/prisma";
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse
-) {
-  const router = req.query.router;
-  res.end(await prisma.blog.findFirst({ where: { router } }));
+export async function GET(request: any) {
+  return NextResponse.json(
+    await prisma.blog.findFirst({ where: { router: request.id } })
+  );
 }

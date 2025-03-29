@@ -32,6 +32,7 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
+    "**/*.mdx",
     "src"
   ],
   "exclude": ["node_modules"]

@@ -18,7 +18,7 @@ import { useState } from "react";
 import { useWindowSize } from "react-use";
 import Confetti from "react-confetti";
 
-export default function Journey({ refProp }) {
+export default function Journey({ refProp }: { refProp: any }) {
   const stacks = [
     "/vue.png",
     "/react.png",
