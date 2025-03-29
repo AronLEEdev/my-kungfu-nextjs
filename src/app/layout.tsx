@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { NavBar } from '@/components/NavBar';
-import { Footer } from '@/components/Footer';
 import BreadcrumbBox from '@/components/BreadcrumbBox';
 export const metadata: Metadata = {
     title: "My KungFu",
@@ -15,13 +14,12 @@ export default function RootLayout({
 }>) {
     return (
         <html lang="en">
-            <body>
+            <body className='flex flex-col min-h-screen'>
                 <NavBar />
                 <BreadcrumbBox />
-                <div className="bg-gray-100">
+                <div className="flex-grow bg-gray-100 relative">
                     {children}
                 </div>
-                <Footer />
             </body>
         </html>
     );

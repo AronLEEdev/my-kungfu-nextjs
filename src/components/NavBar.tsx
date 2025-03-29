@@ -7,7 +7,6 @@ import { useState } from "react";
 
 export function NavBar() {
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-
     function handleClick() {
         if (isDropdownOpen) {
             setIsDropdownOpen(false);

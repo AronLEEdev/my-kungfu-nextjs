@@ -3,5 +3,5 @@ export default function MarkdownLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  return <div className="prose p-2">{children}</div>;
+  return <div>{children}</div>;
 }

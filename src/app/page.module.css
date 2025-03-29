@@ -94,6 +94,7 @@ a.secondary {
   gap: 24px;
   justify-content: space-between;
   padding: 8px;
+  width: 100%;
 }
 
 .footer a {
@@ -125,8 +126,7 @@ a.secondary {
 }
 @media (max-width: 600px) {
   .page {
-    padding: 32px 16px;
-    padding-bottom: 80px;
+    padding: 0;
   }
 
   .main {
