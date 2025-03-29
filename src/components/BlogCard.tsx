@@ -38,53 +38,44 @@ export function BlogCard({ blog }: { blog: Blog }) {
   };
 
   return (
-    <div>
-      <motion.div
-        layout // 启用布局动画
-        transition={{ type: "spring", damping: 25, stiffness: 300 }}
-        className="cursor-pointer"
+    <div className="p-4">
+      <Card
+        className="w-full p-3 flex flex-col text-left h-full justify-between gap-2"
         onClick={() => setIsOpen(true)}
-        style={{
-          padding: "16px",
-          scale: isOpen ? 0.95 : 1,
-          opacity: isOpen ? 0 : 1 // 展开时隐藏原始卡片
-        }}
       >
-        <Card className="w-full p-3 flex flex-col text-left h-full justify-between gap-2">
-          <div
-            className="flex flex-col text-left h-full justify-between gap-2"
-            ref={cardRef}
-          >
-            <div className="w-full flex items-center justify-center relative">
-              <Image
-                src={image}
-                alt={title}
-                width={0}
-                height={0}
-                sizes="100vw"
-                style={{ width: "100%", height: "auto" }}
-              />
-            </div>
-            <div className="flex flex-col gap-1">
-              <span className="font-bold">{title}</span>
-            </div>
-            <div className="flex flex-col gap-1">
-              <div className="flex flex-row gap-1">
-                {tags.map((tag) => {
-                  return (
-                    <Badge
-                      key={tag}
-                      className="p-1 bg-blue-400 min-w-10 flex justify-center"
-                    >
-                      {tag}
-                    </Badge>
-                  );
-                })}
-              </div>
+        <div
+          className="flex flex-col text-left h-full justify-between gap-2"
+          ref={cardRef}
+        >
+          <div className="w-full flex items-center justify-center relative">
+            <Image
+              src={image}
+              alt={title}
+              width={0}
+              height={0}
+              sizes="100vw"
+              style={{ width: "100%", height: "auto" }}
+            />
+          </div>
+          <div className="flex flex-col gap-1">
+            <span className="font-bold">{title}</span>
+          </div>
+          <div className="flex flex-col gap-1">
+            <div className="flex flex-row gap-1">
+              {tags.map((tag) => {
+                return (
+                  <Badge
+                    key={tag}
+                    className="p-1 bg-blue-400 min-w-10 flex justify-center"
+                  >
+                    {tag}
+                  </Badge>
+                );
+              })}
             </div>
           </div>
-        </Card>
-      </motion.div>
+        </div>
+      </Card>
 
       <AnimatePresence>
         {isOpen && (
