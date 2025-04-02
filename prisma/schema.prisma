@@ -16,4 +16,5 @@ model Blog {
     desc   String
     time   DateTime
     tags   String[]
+    refers Json
 }

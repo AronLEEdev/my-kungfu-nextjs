@@ -1,16 +1,15 @@
 "use client";
 import { Card } from "./ui/card";
-import Image from "next/image";
 import { Badge } from "./ui/badge";
-import { motion, AnimatePresence } from "motion/react";
-import { useState, useRef } from "react";
+import { motion } from "motion/react";
+import { useState, useRef, useEffect } from "react";
 import { Button } from "./ui/button";
-
-export function BlogCard({ blog }: { blog: Blog }) {
+import Link from "next/link";
+export function BlogCard({ blog, index }: { blog: Blog; index: number }) {
   const [isOpen, setIsOpen] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
 
-  const { image, title, desc, time, tags } = blog;
+  const { image, title, desc, time, tags, refers } = blog;
   const date = new Date(time);
   const formatter = new Intl.DateTimeFormat("en-US", {
     year: "numeric",
@@ -19,49 +18,101 @@ export function BlogCard({ blog }: { blog: Blog }) {
   });
   const formattedDate = formatter.format(date);
 
-  const getCardPosition = () => {
-    if (!cardRef.current) return { top: 0, left: 0, width: 0, height: 0 };
-    const rect = cardRef.current.getBoundingClientRect();
-    return {
-      top: rect.top,
-      left: rect.left,
-      width: rect.width,
-      height: rect.height
-    };
-  };
+  useEffect(() => {
+    const el: HTMLElement | null = document.querySelector(`#blog${index}`);
+    if (el) el.style.top = `${380 * index}px`;
 
-  const handleClose = () => {
-    setIsOpen(false);
-    if (cardRef.current) {
-      cardRef.current.scrollIntoView({ block: "center", behavior: "smooth" });
-    }
-  };
+    return () => {};
+  }, []);
+
+  function navigateToBlog(e: any): void {
+    e.stopPropagation();
+  }
 
   return (
-    <div className="p-4">
+    <motion.div
+      layout
+      style={{
+        padding: isOpen ? "0" : "16px",
+        height: isOpen ? "100vh" : "380px",
+        zIndex: isOpen ? 100 : 20,
+        top: isOpen ? "0" : `${380 * index}px`,
+        position: isOpen ? "fixed" : "absolute"
+      }}
+      transition={{ duration: 0.3, ease: "easeInOut" }}
+      className="absolute w-full z-20"
+      ref={cardRef}
+      id={"blog" + index}
+    >
       <Card
+        style={{ borderRadius: isOpen ? "0" : "" }}
         className="w-full p-3 flex flex-col text-left h-full justify-between gap-2"
-        onClick={() => setIsOpen(true)}
+        onClick={() => setIsOpen(!isOpen)}
       >
-        <div
-          className="flex flex-col text-left h-full justify-between gap-2"
-          ref={cardRef}
+        <motion.div
+          layout
+          style={{
+            justifyContent: isOpen ? "flex-start" : "space-between"
+          }}
+          className="flex flex-col text-left h-full gap-2"
         >
           <div className="w-full flex items-center justify-center relative">
-            <Image
+            <motion.img
+              layout
               src={image}
               alt={title}
-              width={0}
-              height={0}
-              sizes="100vw"
-              style={{ width: "100%", height: "auto" }}
-            />
+              style={{
+                width: "100%",
+                height: isOpen ? "100%" : "200px",
+                objectFit: "contain"
+              }}
+            ></motion.img>
           </div>
-          <div className="flex flex-col gap-1">
-            <span className="font-bold">{title}</span>
-          </div>
-          <div className="flex flex-col gap-1">
-            <div className="flex flex-row gap-1">
+          <motion.div layout className="flex flex-col gap-1 py-2">
+            <span className="font-bold text-lg">{title}</span>
+          </motion.div>
+          {isOpen && (
+            <motion.div layout className="flex flex-col gap-1 py-2">
+              <span className="text-gray-600">{desc}</span>
+              <div className="text-right mt-2">
+                <Button
+                  className="bg-green-500 w-fit"
+                  onClick={(e) => navigateToBlog(e)}
+                >
+                  <Link href={`/blogs/${blog.router}`}>&#128073; 查看详情</Link>
+                </Button>
+              </div>
+            </motion.div>
+          )}
+          {isOpen && refers && refers?.length > 0 && (
+            <motion.div
+              layout
+              className="flex flex-col gap-1 text-blue-400 py-2 text-sm"
+            >
+              参考资料：
+              {refers?.map((ref) => {
+                return (
+                  <div
+                    key={ref.title}
+                    className="flex flex-row gap-1 items-center justify-between"
+                  >
+                    <span className="font-bold">&#128216; {ref.title} ：</span>
+                    <a href={ref.url} target="_blank" className="underline">
+                      {ref.url}
+                    </a>
+                  </div>
+                );
+              })}
+            </motion.div>
+          )}
+          <motion.div
+            layout
+            style={{
+              marginTop: isOpen ? "auto" : "0px"
+            }}
+            className="flex flex-col gap-1"
+          >
+            <div className="flex flex-row gap-1 items-center">
               {tags.map((tag) => {
                 return (
                   <Badge
@@ -72,83 +123,13 @@ export function BlogCard({ blog }: { blog: Blog }) {
                   </Badge>
                 );
               })}
+              <span className="text-gray-500 text-sm ml-auto px-1">
+                {formattedDate}
+              </span>
             </div>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
       </Card>
-
-      <AnimatePresence>
-        {isOpen && (
-          <>
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 0.5 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.3 }}
-              className="fixed inset-0 bg-black z-40"
-              onClick={handleClose}
-            ></motion.div>
-
-            <motion.div
-              layout
-              initial={{
-                ...getCardPosition(),
-                position: "fixed"
-              }}
-              animate={{
-                top: "50%",
-                left: "50%",
-                width: "90vw",
-                maxWidth: "800px",
-                height: "auto",
-                maxHeight: "90vh",
-                x: "-50%",
-                y: "-50%",
-                zIndex: 50
-              }}
-              exit={{
-                ...getCardPosition(),
-                position: "fixed",
-                borderRadius: "0.5rem",
-                opacity: 0
-              }}
-              transition={{ type: "spring", damping: 25, stiffness: 500 }}
-              className="bg-background overflow-hidden shadow-xl rounded-xl"
-            >
-              <Card className="h-full overflow-y-auto">
-                <div className="p-6">
-                  <div className="relative w-full aspect-video mb-4">
-                    <Image
-                      src={image}
-                      alt={title}
-                      fill
-                      className="object-contain rounded-lg bg-center"
-                    />
-                  </div>
-                  <h2 className="text-2xl font-bold mb-2">{title}</h2>
-                  <div className="flex flex-wrap gap-2 mb-4">
-                    {tags.map((tag) => (
-                      <Badge
-                        key={tag}
-                        className="p-1 bg-blue-400 min-w-10 flex justify-center"
-                      >
-                        {tag}
-                      </Badge>
-                    ))}
-                  </div>
-                  <p className="text-gray-700 mb-4">{desc}</p>
-                  <div className="flex justify-between items-center">
-                    <p className="text-sm text-gray-500">{formattedDate}</p>
-                    <Button className="bg-blue-400">
-                      <span className="mr-0.5">&#128640;</span>查看详情
-                    </Button>
-                  </div>
-                </div>
-              </Card>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
-    </div>
+    </motion.div>
   );
 }
