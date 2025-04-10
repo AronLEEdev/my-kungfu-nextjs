@@ -10,7 +10,6 @@
   align-items: center;
   justify-items: center;
   min-height: 100svh;
-  padding: 80px;
   font-family: var(--font-geist-sans);
 }
 
@@ -31,6 +30,8 @@
   gap: 32px;
   grid-row-start: 1;
   height: 100vh;
+  max-height: 100vh;
+  width: 100%;
 }
 
 .main ol {
@@ -95,6 +96,7 @@ a.secondary {
   justify-content: space-between;
   padding: 8px;
   width: 100%;
+  background: #fff;
 }
 
 .footer a {

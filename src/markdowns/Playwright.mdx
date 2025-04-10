@@ -1,0 +1,159 @@
+[Playwright](https://playwright.dev/)是2023年度github上获星数最多的自动化框架，可以完成多浏览器的自动化测试，具有录制，截屏，自动重试等功能，也有优化开发体验的vscode插件。鉴于项目上正好要使用相关能力，以下记录我在使用过程中遇到的一些问题和解决方法：
+  
+
+内网下载：
+
+  
+
+按照官网的描述：
+
+npm init playwright@latest
+
+如果你是在内网环境，一定会遇到报错。
+
+![](/images/playwright/playwright1.png)
+
+在下载的过程中，除了安装@playwright，还会去下载各浏览器，默认是会下载chromium，webkit，firefox三个。
+
+而就是这三个的下载会因为内网限制超时。
+
+解决方案：自行到cdn下载浏览器，然后手动解压
+
+到**C:\\Users\{用户名}\AppData\Local\ms-playwright**目录下，手动把附件的下载包解压：
+
+新建如下目录：/chromium-1097、/firefox-1438、/webkit-1967
+
+（注意我这里写的每个浏览器的版本是与附件相符合的，不清楚这里对于版本有没有要求，按报错时的提示目录来新建目录即可）
+
+![](/images/playwright/playwright2.png)
+
+  
+
+将安装包解压到对应目录即可。
+
+  
+
+chromium：
+
+![](/images/playwright/playwright3.png)
+
+  
+
+firefox：
+
+![](/images/playwright/playwright4.png)
+
+  
+
+webkit: 
+
+![](/images/playwright/playwright5.png)
+
+  
+
+  
+
+目录结构：
+
+  
+
+若你是执行的以上命令直接init的话，会是以下的目录结构：（例如我在e2e目录下执行的init命令）
+
+![](/images/playwright/playwright6.png)（忽略contant是我自定义的目录）
+
+其中需要注意的是
+
+*   /tests 目录用来存放所有测试的spec文件，当然这个目录也是可以自定义的，在init命令时可配置
+*   /tests-examples是他自带的demo
+*   /test-results用来存放你的测试结果，如果有失败的话，会把对应的trace文件存放在此目录下；开启了录制功能的话，视频也会存储在此
+*   /playwright-report同样存放测试的结果，与test-results不一样的是，他存放的是一个html，直接让你看到你的测试结果
+*   /playwright.config.ts 是playwright的配置文件，详细可以参考：[https://playwright.dev/docs/test-configuration](https://playwright.dev/docs/test-configuration)  
+    
+
+  
+
+playwright.config.ts全局配置文件
+
+  
+
+全局配置的每个配置项信息可以在官网查看，这里我个人用到的是以下几个：
+
+```js
+use: {
+        /* Base URL to use in actions like `await page.goto('/')`. */
+        // baseURL: 'http://127.0.0.1:3000',
+        launchOptions: {
+            proxy: { server: 'per-context' },
+            args: ['--ignore-https-errors', '--disable-web-security']
+        },
+        // 浏览器全局代理
+        proxy: {
+            server: 'http://127.0.0.1:8888',
+            username: 'ProxyUserName',
+            password: 'password'
+        },
+        // 忽略HTTPS的相关错误
+        ignoreHTTPSErrors: true,
+        // 忽略CORS
+        bypassCSP: true,
+        /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
+        trace: 'on-first-retry',
+        video: 'on-first-retry'
+    },
+
+/* Configure projects for major browsers */
+    projects: [
+        {
+            name: 'chromium',
+            use: { ...devices['Desktop Chrome'] }
+        },
+        {
+            name: 'firefox',
+            use: { ...devices['Desktop Firefox'] }
+        },
+        {
+            name: 'webkit',
+            use: { ...devices['Desktop Safari'] }
+        },
+        /* Test against mobile viewports. */
+        // 模拟在微信上的使用场景 微信小程序里使用的内核其实还是webkit
+        {
+            name: 'Mobile IOS',
+            use: { ...devices['iPhone 12'], isMobile: true }
+        },
+        // APP的场景
+        {
+            name: 'Huawei Mate 30 Pro',
+            use: {
+                defaultBrowserType: 'webkit',
+                viewport: { width: 392, height: 800 },
+                isMobile: true
+            }
+        },
+        {
+            name: 'Huawei MatePad Pro',
+            use: {
+                defaultBrowserType: 'webkit',
+                viewport: { width: 1280, height: 800 },
+                isMobile: false
+            }
+        }
+
+        /* Test against branded browsers. */
+        // {
+        //   name: 'Microsoft Edge',
+        //   use: { ...devices['Desktop Edge'], channel: 'msedge' },
+        // },
+        // {
+        //   name: 'Google Chrome',
+        //   use: { ...devices['Desktop Chrome'], channel: 'chrome' },
+        // },
+    ]
+```
+  
+
+
+
+这里projects配置项就是一个比较方便的能力，由于我的项目需要在多个浏览器下执行测试，在这里可以定义不同的测试project，而且有自带的devices让你选择。
+
+像我这里需要模拟微信和其他APP的场景，由于内核都是用的webkit，因此指定浏览器的defaultBrowserType和viewport就能达到模拟的效果。

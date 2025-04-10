@@ -1,0 +1,39 @@
+在一次小程序项目中，主包的大小已经大到无法发布了。这时候最先想到的就是把主包里的Static目录的静态图片全部清理掉换成远程图片。
+
+但是全部替换的会导致页面加载时会并发很多请求，虽然响应都很快，但是一次请求太多图片资源也是很影响体验的，因此想到了引入精灵图的概念来进行整改。
+
+## CSS Sprites
+---------------------------
+
+精灵图简单来说就是将多张图片结合到一张图片，让应用通过一次请求拿到之后，通过不同的定位来展示这个图片的不同部分。
+
+附上一篇讲的很清楚的文章：[CSS Sprites: What They Are, Why They’re Cool, and How To Use Them](https://css-tricks.com/css-sprites/)
+
+这文章里面分享了很多工具，我自己最后选用的是：[https://www.toptal.com/developers/css/sprite-generator/](https://www.toptal.com/developers/css/sprite-generator/)
+
+把图片上传后他会生成精灵图，同时生成需要的css，**而且不会被公司网挡住，他应该是没有上传操作的。**
+
+## 小程序里的应用
+---------------------------------------------------------------------------
+
+在小程序里的应用其实跟在普通H5应用里差不多，看一段实际代码：
+
+```css
+.bg-reliable_png,
+.bg-swiperup_svg,
+.bg-search_svg,
+.bg-icon_cart_less_svg {
+    background-image: url('css_sprites.png');
+    background-repeat: no-repeat;
+    background-size: 498rpx 410rpx;
+}
+ 
+.bg-icon_cart_less_svg {
+    width: 36rpx;
+    height: 36rpx;
+    background-position: -130rpx -360rpx;
+}
+```
+可以看到跟H5不一样的是  
+**1\. 在小程序里因为使用的是rpx，所以用生成器拿到的css样式里都需要把px改成rpx  
+2\. 使用了rpx之后，图片是按px去生成的，所以你需要在手动编辑下图片，看下生成的精灵图大小是什么，通过background-size指定并把px换成rpx，这样图片大小才会也动态的换算**

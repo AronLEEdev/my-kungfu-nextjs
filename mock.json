@@ -69,7 +69,7 @@
   },
   {
     "id": "5",
-    "router": "UniappSubpackge",
+    "router": "UniappSubpackage",
     "image": "/uniapp.jpg",
     "title": "uniapp 小程序包大小优化 - 主包与分包",
     "desc": "这次项目中遇到要新引入依赖，但是发现依赖进来之后包已经大的无法发布了。因此做了一次代码包的整改清理，有一些坑是我之前没想到的，在这里记录一下。",

@@ -1,4 +1,4 @@
-export default function MarkdownLayout({
+export default async function MarkdownLayout({
   children
 }: Readonly<{
   children: React.ReactNode;

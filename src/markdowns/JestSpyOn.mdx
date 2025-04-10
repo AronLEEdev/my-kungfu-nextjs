@@ -1,0 +1,140 @@
+记一次在使用jest mock方法不起作用的问题和解决方案：
+
+  
+
+场景：假设待测试方法a 来自 module A，而方法a其又调用了方法b，此方法b也属于module A。为了专注于方法a的测试，要mock 方法b
+
+  
+
+例如：module A的代码如下
+
+```js
+export function a: ()  {
+   // a calls b
+   if (b()) {
+     return true;
+   } else {
+     return false;
+   }
+}
+
+export function b: () {
+   // whatever
+}
+```
+  
+
+在测试代码中我们尝试mock b函数的返回值为true，并expect a返回true
+
+```js
+// example.test.ts
+import * as A from '../A'
+
+jest.mock('../A', () => {
+  const originalModule = jest.requireActual('../A');
+
+  //Mock the default export and named export 'foo'
+  return {
+    __esModule: true,
+    ...originalModule,
+    b: jest.fn()
+  };
+})
+
+describe('a test that shows mock won't work in this case', () => {
+     test('mock b function and expect a function to return as expect', () => {
+          // IMPORTANT: this wont work!!!
+          b.mockReturnValueOnce(true);
+          expect(a()).toBe(true)
+    })
+})
+```
+
+  
+
+但实际测试会发现，这里b的mock并不生效。实际在执行a()时，还是走到了b的实际方法去了而不是我们mock的返回。
+
+即使换成jest.spyOn的写法也是一样的。
+
+  
+
+根因：由于方法a和方法b都属于moduleA，然后方法a是直接引用的方法b，所以方法b的引用就会固定在方法a的作用域中，不管是mock还是spyOn都会不起作用。
+
+  
+
+首先想到的解决方案：
+
+例如重构代码，将两个方法a和方法b分开到不同文件，但我的本意是写单元测试，因而去改源码让我无法接受。
+
+  
+
+搜了很多网上的例子，有推荐使用开源依赖，[sinon](https://sinonjs.org/) 来创建mock的方案，但最后试过了还是不行。
+
+  
+
+最后解决方案：参考 [https://github.com/sinonjs/sinon/issues/1684](https://github.com/sinonjs/sinon/issues/1684)
+
+  
+
+![](/images/JestSpyOn/1.png)
+
+  
+
+实际上就是避免函数声明，可以避免函数被封装在模块函数里，用const 来定义函数的话，这个方法只会成为这个模块对象的属性。
+
+  
+
+最后我的修改：先修改方法b的声明方式：
+
+  
+```js
+export function a: ()  {
+   // a calls b
+   if (b()) {
+     return true;
+   } else {
+     return false;
+   }
+}
+
+// before: export function b() { ... }
+export const b =  () =>  {
+   // whatever
+}
+```
+  
+
+然后修改测试方法，用sinon.stub模拟方法返回。
+
+```js
+// example.test.ts
+import * as A from '../A'
+
+// add sinon
+import sinon from 'sinon';
+
+jest.mock('../A', () => {
+  const originalModule \= jest.requireActual('../A');
+
+  //Mock the default export and named export 'foo'
+  return {
+    \_\_esModule: true,
+    ...originalModule,
+    b: jest.fn()
+  };
+})
+
+describe('a test that shows mock won't work in this case', () => {
+     test('mock b function and expect a function to return as expect', () \=> {
+          // works like charm
+          const bStub \= sinon.stub(A, 'b');
+          bStub.returns(true);
+          expect(a()).toBe(true)
+    })
+})
+```
+  
+
+总结来说：
+
+产生这个问题还是由于方法作用域没有搞清楚的原因导致的，但如果只是修改方法的声明，继续使用jest.mock经尝试还是不行，因此最后还是使用了sinon。

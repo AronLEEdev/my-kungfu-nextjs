@@ -7,21 +7,21 @@ import { Button } from "./ui/button";
 import Link from "next/link";
 export function BlogCard({ blog, index }: { blog: Blog; index: number }) {
   const [isOpen, setIsOpen] = useState(false);
+  const [formattedDate, setFormattedDate] = useState("");
   const cardRef = useRef<HTMLDivElement>(null);
 
   const { image, title, desc, time, tags, refers } = blog;
-  const date = new Date(time);
-  const formatter = new Intl.DateTimeFormat("en-US", {
-    year: "numeric",
-    month: "long",
-    day: "2-digit"
-  });
-  const formattedDate = formatter.format(date);
 
   useEffect(() => {
     const el: HTMLElement | null = document.querySelector(`#blog${index}`);
-    if (el) el.style.top = `${380 * index}px`;
-
+    if (el) el.style.top = `${400 * index}px`;
+    const date = new Date(time);
+    const formatter = new Intl.DateTimeFormat("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "2-digit"
+    });
+    setFormattedDate(formatter.format(date));
     return () => {};
   }, []);
 
@@ -29,24 +29,10 @@ export function BlogCard({ blog, index }: { blog: Blog; index: number }) {
     e.stopPropagation();
   }
 
-  return (
-    <motion.div
-      layout
-      style={{
-        padding: isOpen ? "0" : "16px",
-        height: isOpen ? "100vh" : "380px",
-        zIndex: isOpen ? 100 : 20,
-        top: isOpen ? "0" : `${380 * index}px`,
-        position: isOpen ? "fixed" : "absolute"
-      }}
-      transition={{ duration: 0.3, ease: "easeInOut" }}
-      className="absolute w-full z-20"
-      ref={cardRef}
-      id={"blog" + index}
-    >
+  function DetailCard() {
+    return (
       <Card
-        style={{ borderRadius: isOpen ? "0" : "" }}
-        className="w-full p-3 flex flex-col text-left h-full justify-between gap-2"
+        className="w-full p-4 flex flex-col text-left h-full justify-between gap-2"
         onClick={() => setIsOpen(!isOpen)}
       >
         <motion.div
@@ -87,7 +73,7 @@ export function BlogCard({ blog, index }: { blog: Blog; index: number }) {
           {isOpen && refers && refers?.length > 0 && (
             <motion.div
               layout
-              className="flex flex-col gap-1 text-blue-400 py-2 text-sm"
+              className="flex flex-col gap-3 text-blue-400 py-2 text-sm"
             >
               参考资料：
               {refers?.map((ref) => {
@@ -96,8 +82,15 @@ export function BlogCard({ blog, index }: { blog: Blog; index: number }) {
                     key={ref.title}
                     className="flex flex-row gap-1 items-center justify-between"
                   >
-                    <span className="font-bold">&#128216; {ref.title} ：</span>
-                    <a href={ref.url} target="_blank" className="underline">
+                    <span className="font-bold text-nowrap">
+                      &#128216; {ref.title} ：
+                    </span>
+                    <a
+                      href={ref.url}
+                      target="_blank"
+                      className="underline max-w-2/3 text-right"
+                      style={{ flex: 1, wordWrap: "break-word" }}
+                    >
                       {ref.url}
                     </a>
                   </div>
@@ -130,6 +123,62 @@ export function BlogCard({ blog, index }: { blog: Blog; index: number }) {
           </motion.div>
         </motion.div>
       </Card>
-    </motion.div>
+    );
+  }
+
+  const getOpenStyle: any = isOpen
+    ? {
+        minHeight: "80vh",
+        height: "fit-content",
+        width: "80vw",
+        zIndex: 100,
+        position: "fixed",
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        margin: "auto"
+      }
+    : {};
+
+  return (
+    <div className="lg:flex lg:justify-center">
+      <motion.div
+        layout
+        style={{
+          padding: isOpen ? "0" : "16px",
+          height: isOpen ? "100vh" : "400px",
+          zIndex: isOpen ? 100 : 20,
+          top: isOpen ? "0" : `${400 * index}px`,
+          position: isOpen ? "fixed" : "absolute",
+          maxWidth: isOpen ? "100vw" : "500px"
+        }}
+        transition={{ duration: 0.3, ease: "easeInOut" }}
+        className="absolute w-full z-20 left-1/2 transform -translate-x-1/2 lg:hidden"
+        ref={cardRef}
+        id={"blog" + index}
+      >
+        <DetailCard />
+      </motion.div>
+      <motion.div
+        layout
+        style={{
+          ...getOpenStyle
+        }}
+        transition={{ duration: 0.3, ease: "easeInOut" }}
+        className="hidden lg:block h-[400px] max-w-[500px] w-full rounded-2xl"
+        ref={cardRef}
+        id={"blog" + index}
+      >
+        <DetailCard />
+      </motion.div>
+      {isOpen && (
+        <motion.div
+          layout
+          className="hidden lg:block fixed top-0 left-0 w-full h-full bg-black/50 z-10"
+          onClick={() => setIsOpen(false)}
+        />
+      )}
+    </div>
   );
 }

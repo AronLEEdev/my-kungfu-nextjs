@@ -10,7 +10,14 @@ async function getBlogsContext(): Promise<Blog[]> {
 export default function BlogList() {
   const [blogs, setBlogs] = useState([] as Blog[]);
   const [loading, setLoading] = useState(true);
+  const [isMobile, setIsMobile] = useState(false);
   useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 1024);
+    };
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+
     setLoading(true);
     getBlogsContext().then((blogs) => {
       setBlogs(
@@ -27,6 +34,10 @@ export default function BlogList() {
       );
       setLoading(false);
     });
+
+    return () => {
+      window.removeEventListener("resize", checkMobile);
+    };
   }, []);
 
   if (loading) {
@@ -44,8 +55,8 @@ export default function BlogList() {
   return (
     <div>
       <div
-        className="box-border relative bg-gray-100"
-        style={{ height: `${380 * blogs.length}px` }}
+        className="box-border relative bg-gray-100 lg:grid lg:grid-cols-2 lg:gap-4 lg:overflow-y-auto lg:mb-4 lg:items-center"
+        style={{ height: isMobile ? `${400 * blogs.length}px` : "100%" }}
       >
         {blogs.map((blog: Blog, index: number) => {
           return <BlogCard key={blog.id} blog={blog} index={index} />;

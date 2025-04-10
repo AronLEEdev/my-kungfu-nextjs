@@ -1,0 +1,81 @@
+cypress 是纯前端的自动化测试框架，适用于前端 web 页面；
+
+之前搞自动化测试主要是用 java 的 selenium，第一次接触到纯前端的自动化框架，发现他里面的功能还是比较丰富的，语法也很简单。
+
+除了可以支持配置在流水线运行之外，他还提供自己的任务看板，录制视频等功能，体验非常好。
+
+### 官方文档：
+
+https://www.cypress.io/
+
+### 安装：
+
+cypress 的安装由于公司网络问题，需要手动配置 binary 路径：
+
+```js
+npm config set CYPRESS_INSTALL_BINARY = ""
+```
+
+### 工程配置：
+
+安装完成之后，手动执行; cypress 提供两种执行方式，一种是他自带的 CLI 方式启动，一种是后台执行。先看 CLI：
+
+1\. cypress cli 启动
+
+```js
+./node_modules/.bin/cypress open
+```
+
+在你的项目根目录下，他会自动创建 cypress 目录，并且提供一系列的示例脚本：
+
+![](/images/cypress/cypress1.png)
+
+执行上面命令失败一般由于是网络问题，需要定义环境变量 HTTP_PROXY，可以确认你的系统是否有这个环境变量。
+
+我是在执行前再手动设置才成功的：
+
+$env:HTTP_PROXY = "http://yourproxy.com"
+
+执行后会自动跳出 CLI 窗口：
+
+![](/images/cypress/cypress2.png)
+
+在这个页面最基本的，可以手动双击里面的 spec 文件，体验一下他的 cypress 运行；
+
+cypress 最大的一个亮点，我个人认为在他的 Runs 页签中：
+
+Runs 页签对应他的 dashboard 功能，这里面在你设置了自己的项目后（[查看他的官网 dashboard 介绍](http://https://www.cypress.io/dashboard)），会记录每次你执行的任务：
+
+![](/images/cypress/cypress3.png)
+
+这里是在 cli 下的界面，你也可以点右上角的“See all runs”，进到他的 web 页面：
+
+![](/images/cypress/cypress4.png)
+
+这里面提供各种分析面板，帮助记录任务，分析结果等等。页面的体验也做得非常好。
+
+2\. 后台执行
+
+上面说得 cypress cli 只是用来让用户体验执行方式的，真的要投入项目使用，能放在 CI 流水线上执行是最方便的，cypress 也支持此种运行方式。
+
+最重要的，后台运行的方式是支持并行执行测试的，cli 下是不行的。（但是如果是你的 PC 本地后台运行，cypress 为了避免把你卡死，是限制并行的，想测试并行，最好还是放到例如 jenkins 任务中去运行）
+
+而且你可以指定录制运行，把每个 spec 的执行都录制下来，方便你去查看问题出现的地方。
+
+运行命令：[官方命令文档](https://docs.cypress.io/guides/guides/command-line.html#cypress-run)
+
+全量运行：npm run cypress run (或者在 package.json 下定义命令 例如 cy: run : "cypress run " => npm run cy:run)
+
+指定运行某测试并录制：
+
+1\. 需要 record-key，在你的 dashboard 下可以查看（记得注册项目）
+
+2\. 网络限制的话，记得执行代理设置
+
+- $env:CYPRESS_RECORD_KEY = "your record key"
+
+- $env:HTTP_PROXY = "http://localhost:3128"
+
+- npm run cy:run -- --record --spec "cypress/and the path to your spec.ts/spec.ts"
+
+执行之后，可以去你的 dashboard 看到执行任务。

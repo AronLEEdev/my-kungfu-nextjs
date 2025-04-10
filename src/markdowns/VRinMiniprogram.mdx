@@ -1,0 +1,75 @@
+> 现在越来越多项目选择用小程序来展示 VR 业务，而腾讯，阿里等也陆续推出他们的 VR 解决方案，本篇主要记录在微信小程序 & 淘宝小程序上实现 VR 的几种途径。
+
+### 微信小程序：
+
+1. [Threejs for miniprogram](https://developers.weixin.qq.com/miniprogram/dev/extended/utils/threejs.html)
+
+threejs 作为 H5 端通用的渲染 webgl 的代码库，微信也推出了他在此基础上的小程序适配版。只要在 template 中使用 webgl 的 canvas，在 js 中选择节点注册到 Threejs 中，之后的使用就跟正常的 H5 使用没有什么区别了：
+
+git 地址： https://github.com/wechat-miniprogram/threejs-miniprogram 其中 example 目录为可直接运行的 demo 小程序。
+
+wxml :
+
+![](/images/vr/vr1.png)
+
+index.js :
+
+![](/images/vr/vr2.png)
+
+贴一个实用类的 VR 实现帖：https://www.cnblogs.com/xuejiangjun/p/11815650.html
+
+问题：
+
+如果你按照以上实现去实施全景图，你会发现他能在开发者工具上正常展示，但是一旦到了真机，就会出现黑屏的现象。
+
+打开调试器，你会看到以下警告：
+
+这个问题在 threejs-miniprogram 的 git 库上作为一个 open issue 存在: https://github.com/wechat-miniprogram/threejs-miniprogram/issues/35
+
+issue 中提到是 IOS 端复现此问题，但经过我的验证此问题在安卓端也会出现。
+
+结论：threejs 虽然是腾讯官方推的 3D 渲染库，也的确支持了其他 threejs 的 webgl 渲染功能，但是他在渲染 texture 纹理上还有问题，因此渲染全景图的 VR 业务场景暂时还不能满足。
+
+2\. [webview](https://developers.weixin.qq.com/miniprogram/dev/component/web-view.html) ：
+
+既然小程序上无法满足，那么我们的思路自然转到 H5 上使用 threejs，在使用 webview 进行跳转。经过调研，业界很多微信小程序供应商，提供 VR 小程序的定制功能的，也普遍都是此解决方案。
+
+H5 上使用 threejs 是没有问题的，这个不在这里多加描述了，这里提一下 webview 的一些局限：
+
+1\. 只有企业版微信才开放 webview 组件能力，个人小程序不开放。
+
+2\. 小程序与 webview 通信：
+
+uniapp， 微信官方都有提供小程序与 webview 通信的 API： postMessage；
+
+web 页面中调用 postMessage，小程序并不会直接响应，而是在以下场景才会响应事件获取到信息：1\. 分享 2. 组件摧毁 3. 页面回退
+
+这里是一篇比较详细的例子：https://segmentfault.com/a/1190000020122429
+
+3\. 限定的 SDK API：web 页面中能使用的 sdk 非常有限，支持的接口在官方文档中查看，需要看自己的业务场景能否满足。
+
+4\. webview 缓存问题：这是一个在微信小程序社区上讨论很久的问题了，但是微信官方一直没有解决。webview 组件的缓存非常严重，怎么清都清不掉。链接：https://developers.weixin.qq.com/community/develop/doc/000ee40c700ec0cb4b079a13856000
+
+淘宝小程序：
+
+​​ 淘宝小程序不像微信，他并不支持 threejs，官方也没有推出适配版本。并且淘宝限制了 webview 组件的域名，只允许手淘官方页域名。因此微信小程序中的两个解决方案在淘宝小程序中都不可行。淘宝官方给出的解决方案为[LayaAir](https://miniapp.open.taobao.com/docV3.htm?docId=119179&docType=1&tag=dev)。
+
+LayaAir 本身是个游戏制作引擎，他也有 3D 的 webgl 渲染库，与淘宝合作后有自己的一套解决方案。
+
+照着文档来操作，是可以顺利导出一个可使用的 VR 小程序，并且可以在里面使用所有淘宝小程序的 API。
+
+### 注意点：
+
+1\. enableSkia：文档中提到的此配置项，打开后会导致原生 canvas 对象全部改为 skia 库的对象。若原项目中使用了 my.createCanvasContext 接口来操作 canvas 组件，你会发现之前的代码全部失效了。因为原生对象已经完全变样了。
+
+对此我使用过他文档中另外推的一个[PIXIJS](https://miniapp.open.taobao.com/docV3.htm?docId=119002&docType=1&tag=dev)的绘图库，也是淘宝在 pixijs 上做的适配版本。
+
+pixijs 个人感觉没有原 canvas 那么简单好用，而且遇到过很多兼容性问题。
+
+2\. 文档中提到的创意互动类项目，效果都只能在真机上预览，模拟器上暂时都不支持。
+
+### 总结一下：
+
+1\. 微信小程序中，官方推出的 threejs 适配版，可以渲染很多 3D 能力，但是若要渲染 VR 全景图，还是需要使用 webview 的能力。
+
+2\. 淘宝小程序只能使用 layaair 来实现，对不熟悉此游戏库的开发来说门槛比较高，并不是很通用。
