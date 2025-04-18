@@ -29,15 +29,18 @@ export default function Home() {
           <div className="text-4xl p-2 my-4 text-center flex flex-col gap-2 justify-center items-center lg:text-5xl lg:gap-4">
             <span className="inline-flex flex-wrap justify-center gap-2">
               Welcome to my{" "}
-              <span className="font-bold text-orange-500 whitespace-nowrap">
+              <motion.span
+                whileHover={{ scale: 1.5 }}
+                className="font-bold text-orange-500 whitespace-nowrap"
+              >
                 &#128074;Kung-Fu!!
-              </span>
+              </motion.span>
             </span>
             <div className="text-2xl p-2 mb-4 text-center">
               独立搭建的博客，记录我的coding生涯.
             </div>
             <div className="text-xl p-2 mt-2">下面是我的自我介绍：</div>
-            <motion.div whileTap={{ scale: 0.9 }}>
+            <motion.div whileTap={{ scale: 0.9 }} whileHover={{ scale: 1.2 }}>
               <Button
                 id="startBtn"
                 className="mt-2 bg-green-500 font-bold"

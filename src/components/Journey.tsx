@@ -123,7 +123,7 @@ export default function Journey({ refProp }: { refProp: any }) {
           </span>
           <span className="text-ms text-gray-500 mb-6">area of expertise</span>
         </div>
-        <div className="grid grid-cols-4 gap-1 items-center mb-4">
+        <div className="grid grid-cols-[repeat(auto-fit,minmax(min(100px,100%),1fr))] gap-2 items-center mb-4">
           {stacks.map((stack) => {
             return (
               <div
@@ -132,8 +132,8 @@ export default function Journey({ refProp }: { refProp: any }) {
               >
                 <Image
                   src={"/stacks" + stack}
-                  width={32}
-                  height={32}
+                  width={50}
+                  height={50}
                   alt={stack}
                 />
               </div>

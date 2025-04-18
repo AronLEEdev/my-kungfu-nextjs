@@ -146,12 +146,12 @@ export function BlogCard({ blog, index }: { blog: Blog; index: number }) {
       <motion.div
         layout
         style={{
-          padding: isOpen ? "0" : "16px",
           height: isOpen ? "100vh" : "400px",
           zIndex: isOpen ? 100 : 20,
           top: isOpen ? "0" : `${400 * index}px`,
           position: isOpen ? "fixed" : "absolute",
-          maxWidth: isOpen ? "100vw" : "500px"
+          maxWidth: isOpen ? "100vw" : "500px",
+          padding: isOpen ? "0" : "16px"
         }}
         transition={{ duration: 0.3, ease: "easeInOut" }}
         className="absolute w-full z-20 left-1/2 transform -translate-x-1/2 lg:hidden"

@@ -55,7 +55,7 @@ export default function BlogList() {
   return (
     <div>
       <div
-        className="box-border relative bg-gray-100 lg:grid lg:grid-cols-2 lg:gap-4 lg:overflow-y-auto lg:mb-4 lg:items-center"
+        className="box-border relative bg-gray-100 lg:grid lg:grid-cols-[repeat(auto-fit,minmax(380px,1fr))] lg:gap-8 lg:overflow-y-auto lg:items-center lg:p-4"
         style={{ height: isMobile ? `${400 * blogs.length}px` : "100%" }}
       >
         {blogs.map((blog: Blog, index: number) => {

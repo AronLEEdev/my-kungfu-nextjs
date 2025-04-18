@@ -1,18 +1,18 @@
 "use client";
 
 import { useParams } from "next/navigation";
-import dynamic from "next/dynamic";
+import { useState, useEffect } from "react";
+import ReactMarkdown from "react-markdown";
 
 export default function BlogPage() {
   const { slug } = useParams() as { slug: string };
+  const [mdxContent, setMdxContent] = useState("");
 
-  const DynamicBlog = dynamic(() => import(`@/markdowns/${slug}.mdx`), {
-    ssr: false
-  });
+  useEffect(() => {
+    fetch(`/api/mdx?slug=${slug}`)
+      .then((res) => res.json())
+      .then((data) => setMdxContent(data.content));
+  }, [slug]);
 
-  return (
-    <div className="prose prose-a:text-blue-600 w-full max-w-none">
-      <DynamicBlog />
-    </div>
-  );
+  return <ReactMarkdown>{mdxContent}</ReactMarkdown>;
 }

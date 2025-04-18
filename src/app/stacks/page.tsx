@@ -5,7 +5,7 @@ import "swiper/css/effect-cards";
 import "swiper/css";
 import "./page.css";
 import { Card } from "@/components/ui/card";
-import { Footer } from "@/components/Footer";
+import { motion } from "motion/react";
 const techStacks = [
   {
     id: "react",
@@ -241,9 +241,9 @@ export default function Stacks() {
   return (
     <div className="flex flex-col gap-4 justify-center p-4">
       <div className="font-bold text-2xl w-full text-center mt-4">
-        Tech used for this site
+        Tech used for this site &#128296;
       </div>
-      <p className="font-light">
+      <p className="font-light text-center">
         This site is a <span className="bg-amber-200">Next.js</span> app, using
         tailwindcss and shadcn/ui for ui styling, prisma as ORM and postgresql
         as database. Deployed on Vercel.
@@ -268,37 +268,40 @@ export default function Stacks() {
             );
           })}
       </Swiper>
-      <div className="font-bold text-2xl w-full text-center mt-4">
+      <div className="font-bold text-2xl w-full text-center mt-16">
         Other tech stacks <span>&#128161;</span>
         <br />
         <span className="text-sm text-blue-500 ">
           encountered in daily work
         </span>
       </div>
-      <div className="grid grid-cols-3 items-center justify-center">
-        {techStacks
-          .filter((el) => !el.included)
-          .map((el) => {
-            return (
-              <div
-                key={el.id}
-                className="flex flex-col gap-2 items-center px-4 py-2"
-                onClick={() => window.open(el.href)}
-              >
-                <img width={50} height={50} src={el.image} alt={el.name} />
-                <span className="underline text-blue-400">{el.name}</span>
-              </div>
-            );
-          })}
+      <div className="mx-auto max-w-[1000px] w-full">
+        <div className="grid grid-cols-[repeat(auto-fit,minmax(min(200px,100%),1fr))] items-center justify-center">
+          {techStacks
+            .filter((el) => !el.included)
+            .map((el) => {
+              return (
+                <motion.div
+                  key={el.id}
+                  whileHover={{ scale: 1.2, transition: { duration: 0.2 } }}
+                  className="flex flex-col gap-2 items-center px-4 py-2"
+                  onClick={() => window.open(el.href)}
+                >
+                  <img width={50} height={50} src={el.image} alt={el.name} />
+                  <span className="underline text-blue-400">{el.name}</span>
+                </motion.div>
+              );
+            })}
+        </div>
       </div>
-      <div className="font-bold text-2xl w-full text-center mt-4">
+      <div className="font-bold text-2xl w-full text-center mt-16">
         Some useful tools <span>&#128295;</span>
         <br />
         <span className="text-sm text-blue-500">
           pretty handy if you ask me
         </span>
       </div>
-      <Card className="flex flex-col p-4 gap-4">
+      <Card className="grid grid-cols-[repeat(auto-fit,minmax(min(400px,100%),1fr))] p-4 gap-4">
         {tools.map((el) => {
           return (
             <div
@@ -306,7 +309,9 @@ export default function Stacks() {
               className="flex flex-col gap-1 justify-center"
               onClick={() => window.open(el.href)}
             >
-              <div className="w-fit text-blue-500 underline">{el.name}</div>
+              <div className="w-fit text-blue-500">
+                &#128209; <span className="underline">{el.name}</span>
+              </div>
               <div className="text-sm text-gray-600 break-words text-left">
                 {el.desc}
               </div>

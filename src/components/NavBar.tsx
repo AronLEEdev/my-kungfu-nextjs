@@ -16,7 +16,7 @@ import {
 } from "./ui/navigationMenu";
 import { Contact } from "./Contact";
 import { motion } from "motion/react";
-
+import { SearchBox } from "./SearchBox";
 export function NavBar() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   function handleClick() {
@@ -36,6 +36,7 @@ export function NavBar() {
         </a>
       </div>
       <div className="hidden sm:flex sm:gap-2 flex-1 justify-end mr-5">
+        <SearchBox />
         <NavigationMenu>
           <NavigationMenuList>
             <NavigationMenuItem className="mx-2">
@@ -71,6 +72,7 @@ export function NavBar() {
         </NavigationMenu>
       </div>
       <div className="block sm:hidden">
+        <SearchBox />
         <DropdownMenu open={isDropdownOpen} onOpenChange={setIsDropdownOpen}>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost">
