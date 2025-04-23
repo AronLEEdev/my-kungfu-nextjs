@@ -3,7 +3,7 @@ import { twMerge } from "tailwind-merge";
 import { cache } from "react";
 import { prisma } from '../../lib/prisma';
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
-import NextAuth, { AuthOptions } from "next-auth";
+import { AuthOptions } from "next-auth";
 import GithubProvider from "next-auth/providers/github";
 export const authOptions: AuthOptions = {
   adapter: PrismaAdapter(prisma),
@@ -15,7 +15,8 @@ export const authOptions: AuthOptions = {
                 timeout: 100000
             }
         })
-    ]
+    ],
+    secret: process.env.AUTH_SECRET
 }
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
