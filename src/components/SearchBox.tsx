@@ -38,7 +38,7 @@ export function SearchBox() {
     fetch("/search-index.json")
       .then((res) => res.json())
       .then((data) => {
-        const filteredResults = data.filter((item) =>
+        const filteredResults = data.filter((item: { title: string }) =>
           item.title.toLowerCase().includes(searchTerm.toLowerCase())
         );
         setResults(filteredResults);
@@ -72,7 +72,7 @@ export function SearchBox() {
           <div className="mt-4">
             {results.length > 0 ? (
               <ul>
-                {results.map((result, index) => (
+                {results.map((result: { slug: string, title: string, description: string }, index) => (
                   <li key={index} className="py-2 border-b">
                     <a href={`/blogs/${result.slug}`} className="text-blue-500">
                       {highlightText(result.title, searchTerm)}
