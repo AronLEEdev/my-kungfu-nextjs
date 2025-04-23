@@ -1,5 +1,18 @@
 import BlogList from "@/components/BlogList";
 import { Footer } from "@/components/Footer";
+import { prisma } from "../../../lib/prisma";
+
+export async function generateMetadata() {
+  const blogs = await prisma.blog.findMany({ select: { tags: true } });
+  const dynamicKeywords = blogs.flatMap((blog) => blog.tags);
+
+  return {
+    title: "Blogs - My KungFu",
+    description: "Explore a collection of blogs documenting coding challenges, solutions, and insights. Click on a blog to read more.",
+    keywords: ["blogs", "coding", "solutions", "programming", "My KungFu", ...dynamicKeywords]
+  };
+}
+
 export default async function Blogs() {
   return (
     <div className="absolute bg-gray-100 left-0 right-0 top-0 px-4">

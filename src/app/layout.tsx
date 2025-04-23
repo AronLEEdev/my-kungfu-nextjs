@@ -3,6 +3,7 @@ import "./globals.css";
 import { NavBar } from "@/components/NavBar";
 import BreadcrumbBox from "@/components/BreadcrumbBox";
 import { GoogleAnalytics } from "@next/third-parties/google";
+import { SessionProviderWrapper } from "@/components/SessionProviderWrapper";
 
 export const metadata: Metadata = {
   title: "My KungFu",
@@ -17,9 +18,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="flex flex-col min-h-screen">
-        <NavBar />
-        <BreadcrumbBox />
-        <div className="flex-grow bg-gray-100 relative">{children}</div>
+        <SessionProviderWrapper>
+          <NavBar />
+          <BreadcrumbBox />
+          <div className="flex-grow bg-gray-100 relative">{children}</div>
+        </SessionProviderWrapper>
       </body>
       <GoogleAnalytics gaId="G-SDBX5EQ3JL" />
     </html>

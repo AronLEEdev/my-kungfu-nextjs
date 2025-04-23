@@ -50,7 +50,8 @@ export function BlogCard({ blog, index }: { blog: Blog; index: number }) {
               style={{
                 width: "100%",
                 height: isOpen ? "100%" : "200px",
-                objectFit: "contain"
+                objectFit: "contain",
+                maxWidth: isOpen ? "400px" : ""
               }}
             ></motion.img>
           </div>
@@ -128,12 +129,12 @@ export function BlogCard({ blog, index }: { blog: Blog; index: number }) {
 
   const getOpenStyle: any = isOpen
     ? {
-        minHeight: "80vh",
         height: "fit-content",
-        width: "80vw",
+        width: "fit-content",
+        maxWidth: "80vw",
         zIndex: 100,
         position: "fixed",
-        top: 0,
+        top: "0",
         left: 0,
         right: 0,
         bottom: 0,

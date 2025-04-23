@@ -1,0 +1,12 @@
+{
+    "servers": {
+        "Prisma": {
+            "command": "npx",
+            "args": [
+                "-y",
+                "prisma",
+                "mcp"
+            ]
+        }
+    }
+}

@@ -17,7 +17,10 @@ import {
 import { Contact } from "./Contact";
 import { motion } from "motion/react";
 import { SearchBox } from "./SearchBox";
+import { signIn, signOut, useSession } from "next-auth/react";
+
 export function NavBar() {
+  const { data: session } = useSession();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   function handleClick() {
     if (isDropdownOpen) {
@@ -70,6 +73,26 @@ export function NavBar() {
             </NavigationMenuItem>
           </NavigationMenuList>
         </NavigationMenu>
+        {session ? (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <img
+                src={session.user?.image || "/default-avatar.png"}
+                alt="User Avatar"
+                className="w-8 h-8 rounded-full cursor-pointer"
+              />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-36">
+              <DropdownMenuItem onClick={() => signOut()}>
+                🚪 Sign Out
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        ) : (
+          <Button variant="ghost" onClick={() => signIn()}>
+            🔑 Sign In
+          </Button>
+        )}
       </div>
       <div className="block sm:hidden">
         <SearchBox />
