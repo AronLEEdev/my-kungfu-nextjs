@@ -6,7 +6,6 @@ import Finger from "@/components/Finger";
 import Journey from "@/components/Journey";
 import { motion } from "motion/react";
 import { useRef } from "react";
-import { Footer } from "@/components/Footer";
 export default function Home() {
   const journey = useRef<HTMLElement>(null);
 
@@ -54,9 +53,6 @@ export default function Home() {
       </main>
       <Finger />
       <Journey refProp={journey} />
-      <div className="w-full flex justify-between items-center">
-        <Footer />
-      </div>
     </div>
   );
 }

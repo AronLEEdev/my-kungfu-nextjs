@@ -5,6 +5,7 @@ import { prisma } from '../../lib/prisma';
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { AuthOptions } from "next-auth";
 import GithubProvider from "next-auth/providers/github";
+
 export const authOptions: AuthOptions = {
   adapter: PrismaAdapter(prisma),
     providers: [
