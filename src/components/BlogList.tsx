@@ -56,7 +56,7 @@ export default function BlogList() {
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [active]);
 
-  useOutsideClick(ref, () => setActive(null));
+  useOutsideClick(ref as any, () => setActive(null));
 
   function navigateToBlog(e: any): void {
     e.stopPropagation();
